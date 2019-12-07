@@ -14,19 +14,50 @@ userRoute.post("/registration", async (req, res) => {
     if (user.length) {
       res.status(201).json({ message: "User has been added to the database" });
     } else {
-      res.status(404).json({ message: "Username is already taken" });
+      res.status(400).json({ message: "Username is already taken" });
     }
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
-userRoute.get("/login", restricted, async (req, res) => {
+userRoute.post("/login", async (req, res) => {
+  try {
+    const user = await User.getUser(req.body.username);
+    if (
+      user.length &&
+      bcrypt.compareSync(req.body.password, user[0].password)
+    ) {
+      req.session.user = user[0];
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: "invalid credentials" });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+userRoute.get("/users", restricted, async (req, res) => {
   try {
     const users = await User.getUsers();
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+userRoute.delete("/logout", async (req, res) => {
+  if (req.session.user) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send("problem loggin out");
+      } else {
+        res.send("logout successful");
+      }
+    });
+  } else {
+    res.end();
   }
 });
 

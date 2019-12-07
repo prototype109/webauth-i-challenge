@@ -6,14 +6,14 @@ module.exports = {
   getUsers
 };
 
-async function addUser(user) {
-  return await db("users").insert(user);
+function addUser(user) {
+  return db("users").insert(user);
 }
 
-async function getUser(user) {
-  return await db("users").where("username", user);
+function getUser(user) {
+  return db("users").where("username", user);
 }
 
-async function getUsers() {
-  return await db("users");
+function getUsers() {
+  return db("users");
 }

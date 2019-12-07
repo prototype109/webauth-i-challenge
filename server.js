@@ -1,6 +1,6 @@
 const express = require("express");
 const session = require("express-session");
-const knexSession = require("connect-session-knex");
+const knexSession = require("connect-session-knex")(session);
 const server = express();
 const userRoute = require("./routes/userRoute");
 
@@ -16,7 +16,7 @@ const sessionConfig = {
   saveUninitialized: false,
   store: new knexSession({
     knex: require("./data/dbConfig"),
-    tablename: "current-session",
+    tablename: "currentSession",
     createtable: true,
     clearInterval: 1000 * 60 * 60
   })
